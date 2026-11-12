@@ -39,7 +39,7 @@ def main():
         if len(candidate_ids)!=1:
             continue
         cid=candidate_ids[0]
-        db.upsert("candidates",[{"fec_candidate_id":cid,"name":cid}],"fec_candidate_id")
+        # Obtain a real candidate name rather than overwriting existing names with IDs.\n        candidate_response=requests.get("https://api.open.fec.gov/v1/candidate/"+str(cid)+"/",\n            params={"api_key":os.environ["FEC_API_KEY"].strip()},timeout=40)\n        candidate_response.raise_for_status()\n        candidate_records=candidate_response.json().get("results",[])\n        if not candidate_records:\n            continue\n        candidate=candidate_records[0]\n        db.upsert("candidates",[{"fec_candidate_id":cid,"name":candidate.get("name") or cid,\n            "party":candidate.get("party_full") or candidate.get("party"),\n            "state":candidate.get("state"),"office":candidate.get("office_full") or candidate.get("office"),\n            "district":candidate.get("district")}],"fec_candidate_id")
         rows.append({
             "source_record_id":str(image),
             "source_sub_id":str(tid),
