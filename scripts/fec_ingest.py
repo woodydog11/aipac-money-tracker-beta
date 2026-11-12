@@ -10,11 +10,11 @@ FEC_BASE = "https://api.open.fec.gov/v1"
 
 class Database:
     def __init__(self):
-        self.url = os.environ["SUPABASE_URL"].rstrip("/") + "/rest/v1"
+        self.url = os.environ["SUPABASE_URL"].strip().rstrip("/") + "/rest/v1"
         self.session = requests.Session()
         # Modern Supabase secret keys are API keys, not JWTs.
         self.session.headers.update({
-            "apikey": os.environ["SUPABASE_SERVICE_ROLE_KEY"],
+            "apikey": os.environ["SUPABASE_SERVICE_ROLE_KEY"].strip(),
             "Content-Type": "application/json",
             "Prefer": "resolution=merge-duplicates,return=minimal",
         })
@@ -45,7 +45,7 @@ def fec_pages(endpoint, params):
     while True:
         response = requests.get(
             FEC_BASE + endpoint,
-            params={**params, "api_key": os.environ["FEC_API_KEY"], "per_page": 100, "page": page},
+            params={**params, "api_key": os.environ["FEC_API_KEY"].strip(), "per_page": 100, "page": page},
             timeout=45,
         )
         response.raise_for_status()
