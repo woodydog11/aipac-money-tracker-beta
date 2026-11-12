@@ -1,7 +1,19 @@
 import {useEffect,useMemo,useState} from 'react';
-import {geoAlbersUsa,geoPath} from 'd3-geo';
+import {geoAlbersUsa,geoArea,geoPath} from 'd3-geo';
 type StateFeature={type:'Feature';properties:{name?:string;postal?:string};geometry:any};
 type StateTotals={state:string;amount:number;category:string};
+// This GeoJSON source contains rings wound opposite to D3's spherical convention.
+// D3 otherwise interprets those polygons as the rest of the globe, causing
+// giant rectangles and clipped states. Correct only inverted geometries.
+function normalizeWinding(feature:StateFeature):StateFeature {
+ const area=geoArea(feature as any);
+ if(area<=2*Math.PI)return feature;
+ const geometry=feature.geometry;
+ if(!geometry)return feature;
+ if(geometry.type==='Polygon')return {...feature,geometry:{...geometry,coordinates:geometry.coordinates.map((ring:number[][])=>[...ring].reverse())}};
+ if(geometry.type==='MultiPolygon')return {...feature,geometry:{...geometry,coordinates:geometry.coordinates.map((poly:number[][][])=>poly.map((ring:number[][])=>[...ring].reverse()))}};
+ return feature;
+}
 const states:Record<string,string>={'Alabama':'AL','Alaska':'AK','Arizona':'AZ','Arkansas':'AR','California':'CA','Colorado':'CO','Connecticut':'CT','Delaware':'DE','Florida':'FL','Georgia':'GA','Hawaii':'HI','Idaho':'ID','Illinois':'IL','Indiana':'IN','Iowa':'IA','Kansas':'KS','Kentucky':'KY','Louisiana':'LA','Maine':'ME','Maryland':'MD','Massachusetts':'MA','Michigan':'MI','Minnesota':'MN','Mississippi':'MS','Missouri':'MO','Montana':'MT','Nebraska':'NE','Nevada':'NV','New Hampshire':'NH','New Jersey':'NJ','New Mexico':'NM','New York':'NY','North Carolina':'NC','North Dakota':'ND','Ohio':'OH','Oklahoma':'OK','Oregon':'OR','Pennsylvania':'PA','Rhode Island':'RI','South Carolina':'SC','South Dakota':'SD','Tennessee':'TN','Texas':'TX','Utah':'UT','Vermont':'VT','Virginia':'VA','Washington':'WA','West Virginia':'WV','Wisconsin':'WI','Wyoming':'WY'};
 export default function USFundingMap({cycle}:{cycle:string}){
  const [features,setFeatures]=useState<StateFeature[]>([]);
@@ -12,7 +24,7 @@ export default function USFundingMap({cycle}:{cycle:string}){
   const controller=new AbortController();
   fetch('https://raw.githubusercontent.com/PublicaMundi/MappingAPI/master/data/geojson/us-states.json',{signal:controller.signal})
    .then(r=>{if(!r.ok)throw Error('Map boundaries unavailable');return r.json()})
-   .then(d=>setFeatures(d.features||[])).catch(e=>{if(e.name!=='AbortError')setError(e.message)});
+   .then(d=>setFeatures((d.features||[]).map(normalizeWinding))).catch(e=>{if(e.name!=='AbortError')setError(e.message)});
   return ()=>controller.abort();
  },[]);
  useEffect(()=>{
