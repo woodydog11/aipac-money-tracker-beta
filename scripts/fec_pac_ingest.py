@@ -8,7 +8,7 @@ import time
 from datetime import datetime, timezone
 from email.utils import parsedate_to_datetime
 import requests
-from fec_ingest import Database, fec_pages
+from fec_ingest import Database, fec_pages, fec_get
 
 API = "https://api.open.fec.gov/v1"
 MIN_REQUEST_INTERVAL = 0.8
@@ -22,32 +22,7 @@ class FecLookup:
         self.candidates = {}
 
     def fetch(self, endpoint):
-        for attempt in range(MAX_RETRIES):
-            elapsed = time.monotonic() - self.last_request
-            if elapsed < MIN_REQUEST_INTERVAL:
-                time.sleep(MIN_REQUEST_INTERVAL - elapsed)
-            self.last_request = time.monotonic()
-            response = self.session.get(
-                API + endpoint,
-                params={"api_key": os.environ["FEC_API_KEY"].strip()},
-                timeout=40,
-            )
-            if response.status_code in (429, 500, 502, 503, 504):
-                retry_after = response.headers.get("Retry-After", "")
-                try:
-                    delay = float(retry_after)
-                except ValueError:
-                    try:
-                        delay = (parsedate_to_datetime(retry_after) - datetime.now(timezone.utc)).total_seconds()
-                    except (ValueError, TypeError, OverflowError):
-                        delay = min(2 ** attempt * 5, 120)
-                delay = max(1, min(delay, 180))
-                print(f"FEC temporary HTTP {response.status_code}; waiting {delay:.0f}s before retry {attempt+1}/{MAX_RETRIES}", flush=True)
-                time.sleep(delay)
-                continue
-            response.raise_for_status()
-            return response.json().get("results", [])
-        raise RuntimeError(f"FEC API retries exhausted for {endpoint}; import stopped safely")
+        return fec_get(endpoint).get("results", [])
 
     def committee(self, cid):
         if cid not in self.committees:
