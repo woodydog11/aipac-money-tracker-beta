@@ -1,13 +1,10 @@
 import {useEffect,useMemo,useState} from 'react';
-import {geoAlbersUsa,geoArea,geoPath} from 'd3-geo';
+import {geoAlbersUsa,geoPath} from 'd3-geo';
 type StateFeature={type:'Feature';properties:{name?:string;postal?:string};geometry:any};
 type StateTotals={state:string;amount:number;category:string};
-// This GeoJSON source contains rings wound opposite to D3's spherical convention.
-// D3 otherwise interprets those polygons as the rest of the globe, causing
-// giant rectangles and clipped states. Correct only inverted geometries.
+// The source GeoJSON uses planar exterior-ring winding. Reverse all rings
+// to match D3's spherical convention; a conditional geoArea check was unreliable.
 function normalizeWinding(feature:StateFeature):StateFeature {
- const area=geoArea(feature as any);
- if(area<=2*Math.PI)return feature;
  const geometry=feature.geometry;
  if(!geometry)return feature;
  if(geometry.type==='Polygon')return {...feature,geometry:{...geometry,coordinates:geometry.coordinates.map((ring:number[][])=>[...ring].reverse())}};
