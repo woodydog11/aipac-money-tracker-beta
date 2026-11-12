@@ -26,12 +26,12 @@ export default function USFundingMap({cycle}:{cycle:string}){
  },[cycle]);
  const amounts=useMemo(()=>{const m:Record<string,number>={};totals.forEach(t=>m[t.state]=(m[t.state]||0)+Number(t.amount));return m},[totals]);
  const max=Math.max(0,...Object.values(amounts));
- const projection=geoAlbersUsa().fitSize([960,600],{type:'FeatureCollection',features} as any);
+ // Use D3's calibrated US composite projection. fitSize() on this external\n // GeoJSON collection distorted the viewport and clipped most states.\n const projection=geoAlbersUsa().scale(1230).translate([480,300]);
  const path=geoPath(projection);
- const selectedAmount=amounts[selected]||0;
+ const selectedAmount=amounts[selected]||0;\n const renderedCount=features.filter(f=>Boolean(path(f as any))).length;
  return <div className="us-map"><svg viewBox="0 0 960 600" role="img" aria-label="Interactive United States map showing verified political spending by state">
  {features.map((f,i)=>{const code=states[f.properties.name||'']||f.properties.postal||'';const amount=amounts[code]||0;const intensity=max?amount/max:0;return <path key={code||i} d={path(f as any)||''} fill={amount?'rgba(91,205,245,'+(0.25+0.7*intensity)+')':'#17354d'} stroke="#4b718c" strokeWidth="1.1" onClick={()=>setSelected(code)} style={{cursor:'pointer'}}><title>{f.properties.name}: {amount?new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'}).format(amount):'No verified amount'}</title></path>})}</svg>
  <div className="map-state-info">{selected?<><b>{selected}</b><span>{selectedAmount?new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'}).format(selectedAmount):'No verified transactions'}</span></>:<span>{error||'Select a state to inspect verified spending.'}</span>}</div>
- <div className="map-disclaimer">Only approved FEC transactions appear in state totals. No verified transactions are currently published.</div>
+ <div className="map-disclaimer">{features.length ? `${renderedCount} state boundaries loaded. ` : 'Loading state boundaries. '}Only approved FEC transactions appear in state totals.</div>
  </div>
 }
