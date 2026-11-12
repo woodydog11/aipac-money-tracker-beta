@@ -40,8 +40,40 @@ class Database:
                 # Avoid printing response bodies which might contain sensitive fields.
                 raise RuntimeError(f"Supabase {table} upsert returned HTTP {response.status_code}")
 
+# One shared throttle for pagination and entity lookups in each importer process.
+_last_fec_request = 0.0
+
+def fec_get(endpoint, params=None):
+    global _last_fec_request
+    from datetime import datetime, timezone
+    from email.utils import parsedate_to_datetime
+    params = dict(params or {})
+    params["api_key"] = os.environ["FEC_API_KEY"].strip()
+    for attempt in range(6):
+        wait = 2.0 - (time.monotonic() - _last_fec_request)
+        if wait > 0:
+            time.sleep(wait)
+        _last_fec_request = time.monotonic()
+        response = requests.get(FEC_BASE + endpoint, params=params, timeout=45)
+        if response.status_code in (429, 500, 502, 503, 504):
+            header = response.headers.get("Retry-After", "")
+            try:
+                delay = float(header)
+            except ValueError:
+                try:
+                    delay = (parsedate_to_datetime(header) - datetime.now(timezone.utc)).total_seconds()
+                except (ValueError, TypeError, OverflowError):
+                    delay = min(15 * (2 ** attempt), 180)
+            delay = max(2, min(delay, 180))
+            print(f"FEC HTTP {response.status_code}: waiting {delay:.0f}s (attempt {attempt+1}/6)", flush=True)
+            time.sleep(delay)
+            continue
+        response.raise_for_status()
+        return response.json()
+    raise RuntimeError(f"FEC request failed after bounded retries: {endpoint}")
+
 def fec_pages(endpoint, params):
-    """FEC uses page-number pagination for candidates and cursor pagination for Schedule E."""
+    """Page-number pagination for candidates; cursor pagination for Schedules B/E."""
     cursor_mode = endpoint in ("/schedules/schedule_e/", "/schedules/schedule_b/")
     page = 1
     cursor = {}
@@ -52,9 +84,7 @@ def fec_pages(endpoint, params):
             query.update(cursor)
         else:
             query["page"] = page
-        response = requests.get(FEC_BASE + endpoint, params=query, timeout=45)
-        response.raise_for_status()
-        payload = response.json()
+        payload = fec_get(endpoint, query)
         rows = payload.get("results", [])
         if not rows:
             return
