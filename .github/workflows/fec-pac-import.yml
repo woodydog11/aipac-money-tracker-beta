@@ -7,22 +7,28 @@ on:
         required: true
         type: choice
         options: ['2026', '2024', '2022']
+  schedule:
+    - cron: '17 */6 * * *'
 permissions:
   contents: read
+concurrency:
+  group: aipac-pac-stage
+  cancel-in-progress: false
 jobs:
   stage:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 12
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
       - run: pip install -r scripts/requirements.txt
-      - name: Stage candidate-committee disbursements for review
+      - name: Stage at most three pages and persist checkpoint
         env:
           FEC_API_KEY: ${{ secrets.FEC_API_KEY }}
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-          ELECTION_CYCLE: ${{ inputs.election_cycle }}
-        run: python scripts/fec_pac_ingest.py
+          ELECTION_CYCLE: ${{ inputs.election_cycle || '2026' }}
+          MAX_PAGES: '3'
+        run: python -u scripts/fec_pac_batch.py
