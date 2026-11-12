@@ -42,7 +42,7 @@ class Database:
 
 def fec_pages(endpoint, params):
     """FEC uses page-number pagination for candidates and cursor pagination for Schedule E."""
-    cursor_mode = endpoint == "/schedules/schedule_e/"
+    cursor_mode = endpoint in ("/schedules/schedule_e/", "/schedules/schedule_b/")
     page = 1
     cursor = {}
     seen_cursors = set()
