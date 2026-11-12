@@ -51,3 +51,31 @@
 .profile-totals strong{font-size:27px;color:#fff}
 .profile-totals small{font-size:10px;color:#8eb8d0}
 @media(max-width:800px){.congressional-metrics{grid-template-columns:1fr}.profile-totals{grid-template-columns:1fr}}
+
+/* Data-driven congressional funding graphics */
+.funding-visuals{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(280px,1fr);gap:16px;margin:18px 0}
+.funding-chart,.funding-party{min-width:0;overflow:hidden}
+.funding-chart-body{padding:16px 20px 12px;display:flex;flex-direction:column;gap:9px}
+.funding-bar-row{display:grid;grid-template-columns:22px minmax(100px,1.1fr) minmax(90px,1.5fr) 88px;gap:10px;align-items:center;background:transparent;border:0;color:#d7ebfa;text-align:left;padding:4px 0;cursor:pointer;width:100%}
+.funding-bar-row:hover .funding-fill,.funding-bar-row:focus-visible .funding-fill{filter:brightness(1.45)}
+.funding-rank{color:#6797b6;font-size:10px}
+.funding-bar-label{font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.funding-track{height:10px;background:#203a50;border-radius:3px;overflow:hidden}
+.funding-fill{height:100%;display:block;background:linear-gradient(90deg,#357eae,#79d8fa);border-radius:3px;transition:width .3s ease}
+.funding-bar-row strong{font-size:11px;text-align:right;font-variant-numeric:tabular-nums}
+.chart-note{padding:11px 20px;border-top:1px solid #29425a;color:#8cb4cb;font-size:10px}
+.party-chart{padding:22px 22px 19px}
+.party-total{font-size:30px;font-weight:700;color:#eef8ff;letter-spacing:-1px}
+.party-total small{display:block;font-size:9px;font-weight:500;color:#86acc6;letter-spacing:1px;margin:5px 0 20px}
+.party-stacked{display:flex;height:17px;background:#29445a;border-radius:4px;overflow:hidden;margin-bottom:22px}
+.party-segment{height:100%;min-width:0}
+.party-segment.democratic,.party-key.democratic{background:#3d9fd8}
+.party-segment.republican,.party-key.republican{background:#e26b6b}
+.party-segment.other,.party-key.other{background:#a8b8c8}
+.party-line{display:grid;grid-template-columns:1fr auto 44px;gap:12px;align-items:center;margin:15px 0;font-size:12px;color:#d7eafa}
+.party-line>span{display:flex;align-items:center;gap:9px}
+.party-key{display:inline-block;width:10px;height:10px;border-radius:2px}
+.party-line strong{font-variant-numeric:tabular-nums}
+.party-line small{text-align:right;color:#91b4c9}
+@media(max-width:1000px){.funding-visuals{grid-template-columns:1fr}}
+@media(max-width:550px){.funding-bar-row{grid-template-columns:16px minmax(80px,1fr) minmax(55px,1fr) 72px;gap:6px}.funding-bar-label,.funding-bar-row strong{font-size:10px}.funding-chart-body{padding:12px}}
