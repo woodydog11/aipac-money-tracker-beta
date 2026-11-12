@@ -4,3 +4,21 @@
 .leader-results{max-height:251px;overflow:auto}.leader-row{padding:12px 20px;border-bottom:1px solid #263e54;display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:12px}.leader-row b,.leader-row small{display:block}.leader-row small{color:#8ba7be;margin-top:4px;font-size:10px}.leader-row strong{color:#d4efff;font-variant-numeric:tabular-nums;white-space:nowrap}
 
 .us-map{margin:0 22px;position:relative;background:#091b2c;border:1px solid #29465e;border-radius:8px;padding:12px}.us-map svg{width:100%;display:block;max-height:320px}.us-map path:hover{stroke:#b9edff;stroke-width:2}.map-state-info{display:flex;gap:10px;align-items:center;color:#b5d3e8;font-size:12px;min-height:28px}.map-state-info b{color:#71d1f7}.map-disclaimer{font-size:10px;color:#7896ad;line-height:1.5;margin-top:7px}@media(max-width:740px){.us-map{margin:0 12px}}
+
+/* Candidate-level preliminary spending: independent expenditures never occupy a receipt column. */
+.leader-explainer{padding:0 22px 14px;color:#9cb8ce;font-size:11px;line-height:1.65}
+.leader-explainer b{color:#d7e9f7}
+.leader-scroll{overflow-x:auto;border-top:1px solid #273f55}
+.leader-grid{display:grid;grid-template-columns:minmax(155px,1.65fr) repeat(4,minmax(105px,1fr));gap:10px;align-items:center;min-width:680px;padding:12px 17px}
+.leader-heading{position:sticky;top:0;background:#102238;color:#8eb4cc;font-size:9px;letter-spacing:.5px;z-index:1}
+.leader-heading span:not(:first-child){text-align:right}
+.leader-results{max-height:360px;overflow-y:auto}
+.leader-candidate{border-top:1px solid #263e54;font-size:11px}
+.leader-candidate b,.leader-candidate small,.leader-candidate a{display:block}
+.leader-candidate b{color:#ecf5fc;font-size:11px}
+.leader-candidate small{color:#87a3b8;font-size:9px;margin-top:5px}
+.leader-candidate a{color:#6bcdf4;font-size:9px;margin-top:6px}
+.leader-amount{text-align:right;min-width:0}
+.leader-amount strong{font-size:12px;font-weight:700;color:#d8f0ff;font-variant-numeric:tabular-nums}
+.leader-amount small{color:#8db3cb;font-size:9px}
+@media(max-width:740px){.leader-grid{min-width:710px}.leader-explainer{padding:0 14px 12px}}
