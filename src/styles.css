@@ -33,3 +33,21 @@
 .leader-heading button:hover,.leader-heading button:focus-visible{color:#fff;text-decoration:underline}
 .us-map svg path:focus-visible{outline:none;filter:brightness(1.7);stroke:#fff;stroke-width:3}
 .map-state-info button{margin-left:12px}
+
+/* Congressional recipient-first homepage */
+.congressional-metrics{grid-template-columns:repeat(3,minmax(0,1fr))}
+.congress-filter{display:flex;flex-wrap:wrap;gap:10px;padding:16px 20px;border-top:1px solid #29425a}
+.congress-filter label{display:flex;align-items:center;gap:8px;flex:1 1 230px;min-width:170px;background:#11263c;border:1px solid #34516b;border-radius:7px;padding:0 12px}
+.congress-filter input{width:100%;min-width:0;background:transparent;border:0;outline:0;color:#e3f3ff;padding:11px 0}
+.congress-filter select,.congress-filter button{background:#142b42;border:1px solid #34516b;border-radius:7px;color:#d6edfc;padding:10px;cursor:pointer}
+.congress-panel .leader-results{max-height:620px}
+.congress-grid{grid-template-columns:minmax(220px,2.5fr) minmax(145px,1fr) minmax(145px,1fr);min-width:550px}
+.candidate-link{background:transparent;border:0;color:#e9f6ff;font-weight:700;font-size:12px;text-align:left;cursor:pointer;padding:0}
+.candidate-link:hover{text-decoration:underline;color:#70d7ff}
+.profile-panel{margin-top:18px}
+.profile-panel .panel-title button{background:transparent;color:#d7eafa;border:0;cursor:pointer}
+.profile-totals{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;padding:20px}
+.profile-totals>div{background:#132a40;border:1px solid #2c4c64;border-radius:8px;padding:18px;display:flex;flex-direction:column;gap:9px}
+.profile-totals strong{font-size:27px;color:#fff}
+.profile-totals small{font-size:10px;color:#8eb8d0}
+@media(max-width:800px){.congressional-metrics{grid-template-columns:1fr}.profile-totals{grid-template-columns:1fr}}
