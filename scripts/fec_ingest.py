@@ -41,19 +41,38 @@ class Database:
                 raise RuntimeError(f"Supabase {table} upsert returned HTTP {response.status_code}")
 
 def fec_pages(endpoint, params):
+    """FEC uses page-number pagination for candidates and cursor pagination for Schedule E."""
+    cursor_mode = endpoint == "/schedules/schedule_e/"
     page = 1
+    cursor = {}
+    seen_cursors = set()
     while True:
-        response = requests.get(
-            FEC_BASE + endpoint,
-            params={**params, "api_key": os.environ["FEC_API_KEY"].strip(), "per_page": 100, "page": page},
-            timeout=45,
-        )
+        query = {**params, "api_key": os.environ["FEC_API_KEY"].strip(), "per_page": 100}
+        if cursor_mode:
+            query.update(cursor)
+        else:
+            query["page"] = page
+        response = requests.get(FEC_BASE + endpoint, params=query, timeout=45)
         response.raise_for_status()
         payload = response.json()
-        yield from payload.get("results", [])
-        if page >= payload.get("pagination", {}).get("pages", page):
+        rows = payload.get("results", [])
+        if not rows:
             return
-        page += 1
+        yield from rows
+        pagination = payload.get("pagination", {})
+        if cursor_mode:
+            next_cursor = pagination.get("last_indexes") or {}
+            if not next_cursor:
+                return
+            marker = tuple(sorted((str(k), str(v)) for k, v in next_cursor.items()))
+            if marker in seen_cursors:
+                raise RuntimeError("FEC cursor repeated; stopping to prevent duplicate pages")
+            seen_cursors.add(marker)
+            cursor = next_cursor
+        else:
+            if page >= pagination.get("pages", page):
+                return
+            page += 1
         time.sleep(0.25)
 
 def ingest_candidates(db, cycle):
