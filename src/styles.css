@@ -22,3 +22,14 @@
 .leader-amount strong{font-size:12px;font-weight:700;color:#d8f0ff;font-variant-numeric:tabular-nums}
 .leader-amount small{color:#8db3cb;font-size:9px}
 @media(max-width:740px){.leader-grid{min-width:710px}.leader-explainer{padding:0 14px 12px}}
+
+/* Shared map-to-leaderboard selection and accessible sortable headings */
+.leader-controls{display:flex;align-items:center;flex-wrap:wrap;gap:12px;padding:10px 18px;color:#a7c8dd;font-size:11px;border-top:1px solid #273f55}
+.leader-controls b{color:#7ed4fa}
+.leader-controls button,.map-state-info button{border:1px solid #426984;border-radius:5px;background:#18364e;color:#a7e6ff;padding:5px 9px;cursor:pointer;font-size:11px}
+.leader-controls span:last-child{margin-left:auto}
+.leader-heading button{background:transparent;border:0;color:#8eb4cc;font:inherit;letter-spacing:inherit;text-align:right;cursor:pointer;padding:4px 0}
+.leader-heading button:first-child{text-align:left}
+.leader-heading button:hover,.leader-heading button:focus-visible{color:#fff;text-decoration:underline}
+.us-map svg path:focus-visible{outline:none;filter:brightness(1.7);stroke:#fff;stroke-width:3}
+.map-state-info button{margin-left:12px}
