@@ -12,7 +12,7 @@ useEffect(()=>{
  const key=import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
  if(!url||!key){setLeaderboardError('Public data connection not configured');return;}
  const controller=new AbortController();
- fetch(url.replace(/\\/$/,'')+'/rest/v1/verified_candidate_spending?select=fec_candidate_id,name,party,state,category,amount&election_cycle=eq.'+cycle+'&order=amount.desc&limit=100',{
+ fetch(url.replace(/\/$/,'')+'/rest/v1/verified_candidate_spending?select=fec_candidate_id,name,party,state,category,amount&election_cycle=eq.'+cycle+'&order=amount.desc&limit=100',{
   headers:{apikey:key},signal:controller.signal
  }).then(async r=>{if(!r.ok)throw new Error('Public data query failed ('+r.status+')');return r.json()})
  .then(rows=>{setLeaderboard(rows);setLeaderboardError('')})
