@@ -81,7 +81,7 @@ def main():
             "election_cycle": cycle,
             "transaction_date": item.get("disbursement_date"),
             "amount": amount,
-            "category": "direct_pac",
+            "category": "earmarked_conduit" if str(item.get("disbursement_description") or "").upper().startswith("EARMARK") else "direct_pac",
             "source_url": f"https://docquery.fec.gov/cgi-bin/fecimg/?{image}",
             "raw_payload": item,
         })
