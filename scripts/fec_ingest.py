@@ -124,7 +124,6 @@ def ingest_udp(db, cycle):
             "category": "independent_support" if indicator == "S" else "independent_oppose",
             "source_url": f"https://docquery.fec.gov/cgi-bin/fecimg/?{image}",
             "raw_payload": item,
-            "reconciliation_status": "pending",
         })
         if len(records) >= 100:
             db.upsert("financial_transactions", records, "source_system,source_record_id,source_sub_id")
